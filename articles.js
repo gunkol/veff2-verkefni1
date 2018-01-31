@@ -4,29 +4,30 @@ const util = require('util');
 const matter = require('gray-matter');
 const MarkdownIt = require('markdown-it');
 
-const articles = express.Router();
+const router = express.Router();
 const readFileAsync = util.promisify(fs.readFile);
-// const writeFileAsync = util.promisify(fs.writeFile);
 
 const encoding = 'utf8';
 const path = './articles';
-const file = 'batman-ipsum.md';
+const file = 'deloren-ipsum.md';
 
 async function read(filename) {
   const data = await readFileAsync(filename);
-
-  return data.toString(encoding);
+  const md = new MarkdownIt();
+  const result = await md.render(matter(data.toString(encoding)).content);
+  return result;
 }
+
+router.get('/:slug', (req, res) => {
+  res.send(req.params.slug);
+});
 
 async function main() {
   const data = await read(`${path}/${file}`);
-  const md = new MarkdownIt();
-  const result = md.render(matter(data).content);
-  articles.get('/', (req, res) => {
-    res.send(result);
+  router.get('/', (req, res) => {
+    res.send(data);
   });
-  // console.log(matter(data).data.title);
 }
 
 main();
-module.exports = articles;
+module.exports = router;
