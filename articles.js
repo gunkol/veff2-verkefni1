@@ -3,13 +3,13 @@ const fs = require('fs');
 const util = require('util');
 const matter = require('gray-matter');
 const MarkdownIt = require('markdown-it');
+const path = require('path');
 
 const router = express.Router();
 const readFileAsync = util.promisify(fs.readFile);
+const readdirAsync = util.promisify(fs.readdir);
 
 const encoding = 'utf8';
-const path = './articles';
-const file = 'deloren-ipsum.md';
 
 async function read(filename) {
   const data = await readFileAsync(filename);
@@ -18,16 +18,12 @@ async function read(filename) {
   return result;
 }
 
-router.get('/:slug', (req, res) => {
-  res.send(req.params.slug);
+router.get('/', (req, res) => {
+  res.send('Hæ forsíða');
 });
 
-async function main() {
-  const data = await read(`${path}/${file}`);
-  router.get('/', (req, res) => {
-    res.send(data);
-  });
-}
+router.get('/:slug', (req, res) => {
+  res.send(`Hæ undirsíða ${req.params.slug}`); /* eslint-disable-line */
+});
 
-main();
 module.exports = router;
