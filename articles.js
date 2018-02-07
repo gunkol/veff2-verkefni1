@@ -57,10 +57,10 @@ async function readArticlesList() {
 async function list(req, res) {
   const title = 'Greinasafnið';
   const articles = await readArticlesList();
-  console.info(articles);
+  const articlesNewestFirst = articles.sort((a, b) => a.date < b.date);
 
   // tökum síðan listann af greinum og birtum í ejs template
-  res.render();
+  res.render('index', { title: title, articles: articlesNewestFirst });
 }
 
 async function article(req, res) {
