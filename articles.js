@@ -60,7 +60,7 @@ async function list(req, res) {
   const articlesNewestFirst = articles.sort((a, b) => a.date < b.date);
 
   // tökum síðan listann af greinum og birtum í ejs template
-  res.render('index', { title: title, articles: articlesNewestFirst });
+  res.render('index.ejs', { title, articles: articlesNewestFirst });
 }
 
 async function article(req, res) {

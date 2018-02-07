@@ -1,3 +1,17 @@
-<%- include('header') -%>
-
-<%- include ('footer') -%>
+<%- include header -%>
+<% articles.forEach(article => { %>
+  <ul class="articles">
+    <li class="articles__article">
+      <a href="<%= article.slug %>" class="articles__link">
+        <div class="articles__img <%= !article.image ? 'article__image--empty' : '' %>">
+          <% if (article.image) { %>
+            <img src="<%= article.image %>" class="article__image">
+          <% } %>
+        </div>
+        <h2 class="article__heading"><%= article.title %></h2>
+        <p class="article__date"><%= article.date %></p>
+      </a>
+    </li>
+  </ul>
+  <% } ); %>
+<%- include footer -%>
