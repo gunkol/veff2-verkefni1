@@ -63,8 +63,25 @@ async function list(req, res) {
   res.render('index.ejs', { title, articles: articlesNewestFirst });
 }
 
-async function article(req, res) {
-  res.send('Hello');
+/*
+  kallað í þegar við fáum slug í URL. sækir aftur lista yfir greinarnar
+  finnur þá grein sem passar við sluggið og býr til html með ejs template.
+  ef greinin er ekki til köllum við í next sem verður væntanlega í app.js
+  sem meðhöndlar villuna.
+*/
+async function article(req, res, next) {
+  const { slug } = req.params;
+
+  const articles = await readArticlesList();
+  const foundArticle = articles.find(i => i.slug === slug);
+
+  if (!foundArticle) {
+    return next();
+  }
+
+  const { title } = foundArticle;
+
+  return res.render('article', { title, article: foundArticle });
 }
 
 router.get('/', list);
