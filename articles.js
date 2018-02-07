@@ -9,21 +9,66 @@ const router = express.Router();
 const readFileAsync = util.promisify(fs.readFile);
 const readdirAsync = util.promisify(fs.readdir);
 
-const encoding = 'utf8';
+const md = new MarkdownIt();
+const articlePath = './articles';
 
-async function read(filename) {
-  const data = await readFileAsync(filename);
-  const md = new MarkdownIt();
-  const result = await md.render(matter(data.toString(encoding)).content);
-  return result;
+/*
+  tekur hverja grein sem við möppum í readArticlesList og skilar
+  bæði contentinu í html og data-inu í breytum sem við þekkjum
+*/
+async function readArticle(filepath) {
+  const file = await readFileAsync(filepath);
+  const data = matter(file);
+
+  const {
+    content,
+    data: {
+      title,
+      slug,
+      date,
+      image,
+    },
+  } = data;
+
+  return {
+    content: md.render(content),
+    title,
+    slug,
+    date: Date.parse(date),
+    image,
+    path: filepath,
+  };
 }
 
-router.get('/', (req, res) => {
-  res.send('Hæ forsíða');
-});
 
-router.get('/:slug', (req, res) => {
-  res.send(`Hæ undirsíða ${req.params.slug}`); /* eslint-disable-line */
-});
+async function readArticlesList() {
+  const files = await readdirAsync(articlePath);
+  const articles = files.filter(file => path.extname(file) === '.md')
+    .map(file => readArticle(`${articlePath}/${file}`));
+
+  return Promise.all(articles);
+}
+
+
+/*
+  list býr til forsíðuna með því að kalla á föll
+  eins og readArticlesList og fl. sem vinna vinnuna
+*/
+async function list(req, res) {
+  const title = 'Greinasafnið';
+  const articles = await readArticlesList();
+  console.info(articles);
+
+  // tökum síðan listann af greinum og birtum í ejs template
+  res.render();
+}
+
+async function article(req, res) {
+  res.send('Hello');
+}
+
+router.get('/', list);
+
+router.get('/:slug', article);
 
 module.exports = router;
