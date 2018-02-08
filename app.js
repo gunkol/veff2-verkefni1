@@ -5,6 +5,15 @@ const router = require('./articles');
 
 const app = express();
 
+app.locals.parseDate = (time) => {
+  const date = new Date(time);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+
+  return `${day}.${month}.${year}`;
+};
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
