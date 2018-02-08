@@ -84,8 +84,13 @@ async function article(req, res, next) {
   return res.render('article', { title, article: foundArticle });
 }
 
-router.get('/', list);
+function catchErrors(fn) {
+  return function (req, res, next) {
+    return fn(req, res, next).catch(next);
+  };
+}
 
-router.get('/:slug', article);
+router.get('/', catchErrors(list));
+router.get('/:slug', catchErrors(article));
 
 module.exports = router;
